@@ -6,7 +6,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="{% static 'images_1/icons/favicon.ico' %}"/>
+	<link rel="icon" type="image/png" href="{% static 'images_1/icons/new-post.png' %}"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
 <!--===============================================================================================-->
@@ -33,7 +33,7 @@
 			<form method="post" action="" class="contact1-form validate-form">
 				{% csrf_token %}
 				<span class="contact1-form-title">
-					Mail away!!!
+					Mail away {{request.user}}!!!
 				</span>
 
 				<div class="wrap-input1 validate-input" data-validate = "Name is required">
