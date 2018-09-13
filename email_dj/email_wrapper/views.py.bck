@@ -21,8 +21,9 @@ def login_view(request):
 def after_login_view(request):
     return render(request,"after_login.html",{})
 
-#prepare the data
-sg = sendgrid.SendGridAPIClient(apikey='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') #send grid obkect
+
+sg = sendgrid.SendGridAPIClient(apikey='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')
+#sg = sendgrid.SendGridAPIClient(apikey='SG.lz4L4ouLTU-bk_kedojFAg.zi_LyQbzojp4e830s2a-GJQbTl6B7T8l')
 CONFIGURATION_SET = "ConfigSet"
 BODY_HTML = """<html>
 <head></head>
@@ -34,10 +35,21 @@ BODY_HTML = """<html>
 SENDER = "Srikanth <potipireddi.srikanth@gmail.com>"
 AWS_REGION = "us-west-2"
 CHARSET = "UTF-8"
-client = boto3.client('ses',region_name=AWS_REGION) #SES object
+client = boto3.client('ses',region_name=AWS_REGION)
 
 def mail_deliver_view(request):
-
+    #api_key_id = "potipi"
+    #response = sg.client.api_keys._(api_key_id).get()
+    #print response.status_code
+    #print response.body
+    #print response.header
+    #sg = sendgrid.SendGridAPIClient(apikey='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')
+    #sg_response = sg.client.suppression.bounces.get()
+    #print("send grid response is: " + str(sg_response.status_code))
+    #if sg_response.status_code == 200:
+    #    print("we are good to go with snedGrid")
+    #print(sg_response.body)
+    #print(sg_response.headers)
     if request.method == "POST":
         print("calling mail delvier view")
         name = request.POST.get("name")
@@ -90,7 +102,6 @@ def mail_deliver_view(request):
         print(response.body)
         print(response.headers)
 
-        #if failed from sendgrid
         if(response.status_code != 202):
             try:
                 #Provide the contents of the email.
@@ -118,7 +129,7 @@ def mail_deliver_view(request):
                     },
                     Source=SENDER,
                 )
-            
+            # Display an error if something goes wrong.
             except ClientError as e:
                 print(e.response['Error']['Message'])
             else:
@@ -127,6 +138,18 @@ def mail_deliver_view(request):
 
     return render(request,"after_login.html",{})
 
+
+#def ses_deliver_view(request):
+#    if request.method == "POST":
+#        name = request.POST.get("name")
+#        to_email = request.POST.get("email")
+#        message = request.POST.get("message")
+#        subject = request.POST.get("subject")
+
+
+
+
+    #return render(request,"after_login.html",{})
 
 
 

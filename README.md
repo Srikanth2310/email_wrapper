@@ -16,6 +16,7 @@ I working on setting up Amazon EC2 server
 Backend Implementation:
 Registration, Logging & Logout Systems --> Class based Views
 APIS used for sending mails --> SendGrid(default) & Amazon SES
+NOTE: Amazon SES requires the sneder mail to be verified as well. So please give the email where you want to check emails so that I can add it
 
 Areas to look for the code:
 - email_dj/urls.py
