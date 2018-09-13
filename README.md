@@ -1,5 +1,16 @@
-Send mails without login --> http://127.0.0.1:8000/send/
+This README is an intention to explain the project to the evaluator
 
-https://docs.bitnami.com/bch/how-to/use-ses/
+Frameworks used --> Django
+Advantages:
+- Full Stack framework
+- Inbuilt user authentication system
 
-https://www.webforefront.com/django/setupdjangoemail.html
+For the CSS templates --> Free bootstrap templates
+
+The project (Email Service Project):
+Local Host : http://127.0.0.1:8000 (default local server)
+
+
+Backend Implementation:
+Registration, Logging & Logout Systems --> Class based Views
+APIS used for sending mails --> SendGrid(default) & Amazon SES

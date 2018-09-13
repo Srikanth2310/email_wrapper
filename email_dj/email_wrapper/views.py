@@ -3,12 +3,15 @@ import boto3
 import os
 from django.shortcuts import render,redirect
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm #use the native Django form
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
+from django.views.generic import View
 from django.template.loader import get_template
 from django.conf import settings
 
 from sendgrid.helpers.mail import *
 from botocore.exceptions import ClientError
+
+from .forms import UserForm
 
 # Create your views here.
 
@@ -19,16 +22,13 @@ def after_login_view(request):
     return render(request,"after_login.html",{})
 
 
-sg = sendgrid.SendGridAPIClient(apikey='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')
+sg = sendgrid.SendGridAPIClient(apikey='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')
+#sg = sendgrid.SendGridAPIClient(apikey='SG.lz4L4ouLTU-bk_kedojFAg.zi_LyQbzojp4e830s2a-GJQbTl6B7T8l')
 CONFIGURATION_SET = "ConfigSet"
 BODY_HTML = """<html>
 <head></head>
 <body>
-  <h1>Amazon SES Test (SDK for Python)</h1>
-  <p>This email was sent with
-    <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
-    <a href='https://aws.amazon.com/sdk-for-python/'>
-      AWS SDK for Python (Boto)</a>.</p>
+  <p>Django is fun</p>
 </body>
 </html>
             """
@@ -102,7 +102,7 @@ def mail_deliver_view(request):
         print(response.body)
         print(response.headers)
 
-        if(response.status_code != 200):
+        if(response.status_code != 202):
             try:
                 #Provide the contents of the email.
                 response = client.send_email(
@@ -128,9 +128,6 @@ def mail_deliver_view(request):
                         },
                     },
                     Source=SENDER,
-                    # If you are not using a configuration set, comment or delete the
-                    # following line
-                    #ConfigurationSetName=CONFIGURATION_SET,
                 )
             # Display an error if something goes wrong.
             except ClientError as e:
@@ -153,3 +150,66 @@ def mail_deliver_view(request):
 
 
     #return render(request,"after_login.html",{})
+
+
+
+#Handle User Registrations.
+class UserFormView(View):
+    form_class = UserForm
+    template_name = 'registration_form.html'
+    #template_name = 'login.html'
+
+    #balnk form
+    def get(self,request):
+        form = self.form_class(None)
+        return render(request,self.template_name,{'form':form})
+
+    def post(self,request):
+        form = self.form_class(request.POST)
+        #print(form.is_valid())
+        #print(form.errors)
+        if form.is_valid():
+
+            user = form.save(commit=False)
+            #cleaned data
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user.set_password(password)
+            user.save()
+            #return user object
+            user = authenticate(username=username,password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request,user)
+                    return redirect(mail_deliver_view)
+
+        return render(request,self.template_name,{'form':form})
+
+
+#Handle login
+class UserLoginView(View):
+    form_class = UserForm
+    template_name = 'login.html'
+
+    #balnk form
+    def get(self,request):
+        form = self.form_class(None)
+        return render(request,self.template_name,{'form':form})
+
+    def post(self,request):
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username,password=password)
+        if user is not None:
+            if user.is_active:
+                login(request,user)
+                return redirect(mail_deliver_view)
+
+        return render(request,self.template_name,{'form':form})
+
+#Handle Logout
+class UserLogoutView(View):
+    template_name = 'login.html'
+    def get(self, request):
+        logout(request)
+        return render(request,self.template_name,{})
