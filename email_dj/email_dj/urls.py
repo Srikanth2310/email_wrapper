@@ -17,11 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include,url
 
-from email_wrapper.views import login_view, after_login_view, mail_deliver_view, ses_deliver_view
+from email_wrapper.views import login_view, after_login_view, mail_deliver_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',login_view, name='login'),
     #path('send/',after_login_view, name='send_mail'),
-    #path('send/',mail_deliver_view, name='send_mail'),
-    path('send/',ses_deliver_view, name='send_mail'),
+    path('send/',mail_deliver_view, name='send_mail'),
+    #path('send/',ses_deliver_view, name='send_mail'),
 ]

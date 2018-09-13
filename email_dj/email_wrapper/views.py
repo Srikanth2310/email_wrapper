@@ -18,6 +18,25 @@ def login_view(request):
 def after_login_view(request):
     return render(request,"after_login.html",{})
 
+
+sg = sendgrid.SendGridAPIClient(apikey='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')
+CONFIGURATION_SET = "ConfigSet"
+BODY_HTML = """<html>
+<head></head>
+<body>
+  <h1>Amazon SES Test (SDK for Python)</h1>
+  <p>This email was sent with
+    <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
+    <a href='https://aws.amazon.com/sdk-for-python/'>
+      AWS SDK for Python (Boto)</a>.</p>
+</body>
+</html>
+            """
+SENDER = "Srikanth <potipireddi.srikanth@gmail.com>"
+AWS_REGION = "us-west-2"
+CHARSET = "UTF-8"
+client = boto3.client('ses',region_name=AWS_REGION)
+
 def mail_deliver_view(request):
     #api_key_id = "potipi"
     #response = sg.client.api_keys._(api_key_id).get()
@@ -34,7 +53,7 @@ def mail_deliver_view(request):
     if request.method == "POST":
         print("calling mail delvier view")
         name = request.POST.get("name")
-        to_email = request.POST.get("emal")
+        to_email = request.POST.get("email")
         message = request.POST.get("message")
         subject = request.POST.get("subject")
 
@@ -54,7 +73,7 @@ def mail_deliver_view(request):
         #send_mail(subject,mail_message,from_email,email_to,fail_silently=False)
 
         #use sendgrid api
-        sg = sendgrid.SendGridAPIClient(apikey='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')
+
         data = {
           "personalizations": [
             {
@@ -83,65 +102,54 @@ def mail_deliver_view(request):
         print(response.body)
         print(response.headers)
 
+        if(response.status_code != 200):
+            try:
+                #Provide the contents of the email.
+                response = client.send_email(
+                    Destination={
+                        'ToAddresses': [
+                            to_email,
+                        ],
+                    },
+                    Message={
+                        'Body': {
+                            'Html': {
+                                'Charset': CHARSET,
+                                'Data': BODY_HTML,
+                            },
+                            'Text': {
+                                'Charset': CHARSET,
+                                'Data': message,
+                            },
+                        },
+                        'Subject': {
+                            'Charset': CHARSET,
+                            'Data': subject,
+                        },
+                    },
+                    Source=SENDER,
+                    # If you are not using a configuration set, comment or delete the
+                    # following line
+                    #ConfigurationSetName=CONFIGURATION_SET,
+                )
+            # Display an error if something goes wrong.
+            except ClientError as e:
+                print(e.response['Error']['Message'])
+            else:
+                print("Email sent! Message ID:"),
+                print(response['MessageId'])
+
     return render(request,"after_login.html",{})
 
 
-def ses_deliver_view(request):
-    if request.method == "POST":
-        name = request.POST.get("name")
-        to_email = request.POST.get("emal")
-        message = request.POST.get("message")
-        subject = request.POST.get("subject")
+#def ses_deliver_view(request):
+#    if request.method == "POST":
+#        name = request.POST.get("name")
+#        to_email = request.POST.get("email")
+#        message = request.POST.get("message")
+#        subject = request.POST.get("subject")
 
-        #CONFIGURATION_SET = "ConfigSet"
-        BODY_HTML = """<html>
-        <head></head>
-        <body>
-          <h1>Amazon SES Test (SDK for Python)</h1>
-          <p>This email was sent with
-            <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
-            <a href='https://aws.amazon.com/sdk-for-python/'>
-              AWS SDK for Python (Boto)</a>.</p>
-        </body>
-        </html>
-                    """
-        SENDER = "Srikanth <potipireddi.srikanth@gmail.com>"
-        AWS_REGION = "us-west-2"
-        CHARSET = "UTF-8"
-        client = boto3.client('ses',region_name=AWS_REGION)
-        try:
-            #Provide the contents of the email.
-            response = client.send_email(
-                Destination={
-                    'ToAddresses': [
-                        to_email,
-                    ],
-                },
-                Message={
-                    'Body': {
-                        'Html': {
-                            'Charset': CHARSET,
-                            'Data': BODY_HTML,
-                        },
-                        'Text': {
-                            'Charset': CHARSET,
-                            'Data': message,
-                        },
-                    },
-                    'Subject': {
-                        'Charset': CHARSET,
-                        'Data': subject,
-                    },
-                },
-                Source=SENDER,
-                # If you are not using a configuration set, comment or delete the
-                # following line
-                #ConfigurationSetName=CONFIGURATION_SET,
-            )
-        # Display an error if something goes wrong.
-        except ClientError as e:
-            print(e.response['Error']['Message'])
-        else:
-            print("Email sent! Message ID:"),
-            print(response['MessageId'])
-    return render(request,"after_login.html",{})
+
+
+
+    #return render(request,"after_login.html",{})
