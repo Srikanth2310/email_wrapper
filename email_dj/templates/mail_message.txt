@@ -1,0 +1,8 @@
+Received a mail from:
+{{ user }}
+
+with body:
+{{ message}}
+
+reply to:
+{{ email }}

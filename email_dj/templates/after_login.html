@@ -30,7 +30,7 @@
 				<img src="{% static 'images_1/img-01.png' %}" alt="IMG">
 			</div>
 
-			<form method="post" action="" class="contact1-form validate-form">
+			<form method="post" action="." class="contact1-form validate-form">
 				{% csrf_token %}
 				<span class="contact1-form-title">
 					Mail away {{request.user}}!!!
