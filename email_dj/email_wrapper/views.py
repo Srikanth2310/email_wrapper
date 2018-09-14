@@ -22,7 +22,15 @@ def after_login_view(request):
     return render(request,"after_login.html",{})
 
 #prepare the data
-sg = sendgrid.SendGridAPIClient(apikey='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') #send grid obkect
+sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+#sg = sendgrid.SendGridAPIClient(apikey='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') #send grid obkect
+#params = {'start_time': 1, 'end_time': 1}
+#response = sg.client.suppression.bounces.get(query_params=params)
+#print("send grid response is: " + str(bounce_response.status_code))
+
+#api_key_id = "srikanth_icici"
+#key_response = sg.client.api_keys._(api_key_id).get()
+
 CONFIGURATION_SET = "ConfigSet"
 BODY_HTML = """<html>
 <head></head>
@@ -37,6 +45,8 @@ CHARSET = "UTF-8"
 client = boto3.client('ses',region_name=AWS_REGION) #SES object
 
 def mail_deliver_view(request):
+    print(os.environ.get('SENDGRID_API_KEY'))
+    #print("send grid response is: " + str(response.status_code))
 
     if request.method == "POST":
         print("calling mail delvier view")
@@ -174,6 +184,7 @@ class UserLoginView(View):
         return render(request,self.template_name,{'form':form})
 
     def post(self,request):
+        form = self.form_class(request.POST)
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username,password=password)
@@ -186,6 +197,7 @@ class UserLoginView(View):
 
 #Handle Logout
 class UserLogoutView(View):
+    
     template_name = 'login.html'
     def get(self, request):
         logout(request)
