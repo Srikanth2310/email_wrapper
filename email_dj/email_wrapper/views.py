@@ -43,13 +43,17 @@ SENDER = "Srikanth <potipireddi.srikanth@gmail.com>"
 AWS_REGION = "us-west-2"
 CHARSET = "UTF-8"
 client = boto3.client('ses',region_name=AWS_REGION) #SES object
+count_of_mails = 0
 
 def mail_deliver_view(request):
+    count_of_mails = 0
     print(os.environ.get('SENDGRID_API_KEY'))
     #print("send grid response is: " + str(response.status_code))
 
     if request.method == "POST":
+        count_of_mails += 1
         print("calling mail delvier view")
+        print("mails attmepted to send:" + str(count_of_mails))
         name = request.POST.get("name")
         to_email = request.POST.get("email")
         message = request.POST.get("message")
@@ -135,7 +139,7 @@ def mail_deliver_view(request):
                 print("Email sent! Message ID:"),
                 print(response['MessageId'])
 
-    return render(request,"after_login.html",{})
+    return render(request,"after_login.html",{'count_of_mails':count_of_mails})
 
 
 

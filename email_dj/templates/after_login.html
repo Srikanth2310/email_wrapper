@@ -28,13 +28,12 @@
 		<div class="container-contact1">
 			<div class="contact1-pic js-tilt" data-tilt>
 				<img src="{% static 'images_1/img-01.png' %}" alt="IMG">
-				<a class="login100-form-btn" href="{% url 'logout' %}">Logout</a>
 			</div>
-
 			<form method="post" action="." class="contact1-form validate-form">
 				{% csrf_token %}
 				<span class="contact1-form-title">
-					Mail away {{request.user}}!!!
+					Mail away {{request.user}}!!! 
+          <span>Mails sent in the session: {{ count_of_mails }}</span>
 				</span>
 
 				<div class="wrap-input1 validate-input" data-validate = "Name is required">
@@ -65,6 +64,11 @@
 						</span>
 					</button>
 				</div>
+        <div class="container-login100-form-btn">                           
+          <a class="login100-form-btn" href="{% url 'logout' %}">      
+            Logout                                             
+          </a>                                                              
+        </div>                                                              
 			</form>
 		</div>
 	</div>
